@@ -3,15 +3,11 @@ import json
 import discord
 from datetime import datetime
 
-API_KEY_FILE = "osu_api_key.txt"
 OSU_USERS_FILE = "osu_users.txt"
 OSU_SCORE_IDS = "osu_score_ids.txt"
 OSU_CLIENT_CREDENTIALS_FILE = "osu_client_credentials.txt"
 SEPARATOR = ";"
 
-def GetAPIKey():
-    with open(API_KEY_FILE, 'r') as file:
-        return file.readline()
 
 def GetClientSecret():
     with open(OSU_CLIENT_CREDENTIALS_FILE, 'r') as file:
@@ -26,7 +22,7 @@ def GetClientID():
             if "id:==" in line:
                 return line.lstrip("id:==")
 
-API_KEY = GetAPIKey()
+
 CLIENT_ID = GetClientID()
 CLIENT_SECRET = GetClientSecret()
 
