@@ -35,6 +35,7 @@ async def GetFileNames(dir):
 async def PlaySound(voice, sound_path):
     source = FFmpegOpusAudio(sound_path)
     voice.play(source)
+    voice.is_playing()
 
 
 async def SaveSound(sound, where):
@@ -107,7 +108,13 @@ async def dj(ctx, *args):
         await ctx.channel.send("Please give a song name!")
         return
     
+    if not ctx.voice_client:
+                await join(ctx)
+    
     search_name = args[0]
+    if ctx.voice_client.is_playing():
+        await ctx.channel.send("Another song is playing, please wait until it finishes.")
+        return
     if "https://" in search_name:
         await PlaySongFromYT(ctx, search_name)
         return
@@ -115,8 +122,6 @@ async def dj(ctx, *args):
         
     for song_name in song_names:  
         if search_name.lower() in song_name.lower():
-            if not ctx.voice_client:
-                await join(ctx)
             await PlaySound(ctx.voice_client, SONGS_DIR+song_name)
             return ""
     await ctx.channel.send(f"There isn't a song with the name: {search_name}")
@@ -126,13 +131,14 @@ async def dj(ctx, *args):
 @client.command()
 async def stop(ctx):
     if ctx.voice_client:
-        ctx.voice_client.stop()    
+        ctx.voice_client.stop() 
 
 
 @client.command()
 async def pause(ctx):
     if ctx.voice_client:
         ctx.voice_client.pause()
+        ctx.voice_client.is_paused()
 
 
 @client.command()
