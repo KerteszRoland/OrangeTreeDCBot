@@ -1,8 +1,9 @@
 __pycache__/
-Bearer_token.txt
-osu_api_key.txt
-osu_score_ids.txt
-osu_users.txt
 Songs/
 Sound_Effects/
-osu_client_credentials.txt
+osu_score_ids.txt
+osu_users.txt
+.env
+.l_cache
+.r_cache
+.cache

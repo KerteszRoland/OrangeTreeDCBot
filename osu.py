@@ -2,54 +2,19 @@ import requests
 import json
 import discord
 from datetime import datetime
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
 
 OSU_USERS_FILE = "osu_users.txt"
 OSU_SCORE_IDS = "osu_score_ids.txt"
-OSU_CLIENT_CREDENTIALS_FILE = "osu_client_credentials.txt"
 SEPARATOR = ";"
+CLIENT_ID = environ.get("OSU_CLIENT_ID")
+CLIENT_SECRET = environ.get("OSU_CLIENT_SECRET")
 
-
-def GetClientSecret():
-    with open(OSU_CLIENT_CREDENTIALS_FILE, 'r') as file:
-        for line in file.read().splitlines():
-            if "secret:==" in line:
-                return line.lstrip("secret:==")
-          
-          
-def GetClientID():
-    with open(OSU_CLIENT_CREDENTIALS_FILE, 'r') as file:
-        for line in file.read().splitlines():
-            if "id:==" in line:
-                return line.lstrip("id:==")
-
-
-CLIENT_ID = GetClientID()
-CLIENT_SECRET = GetClientSecret()
 
 class BeatmapScore:
-    id = "0"
-    score = 0
-    accuracy = 0
-    beatmap_name = ""
-    beatmap_star = 0
-    ranked = False
-    beatmap_link = ""
-    fc = False
-    count_100 = 0
-    count_50 = 0
-    count_miss = 0
-    combo = 0
-    username = ""
-    user_id = 0
-    user_pic = ""
-    pp = 0
-    rank = ""
-    best_score_id = ""
-    url = "https://osu.ppy.sh/scores/osu/"
-    mods = ""
-    beatmap_pic = ""
-    rank_color = ""
-
     def __init__(self, stats):
         self.user_pic = stats['user_pic']
         self.mods = stats['mods']
