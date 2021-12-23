@@ -282,7 +282,7 @@ async def sp_switch(ctx, name):
     
 
 @client.command()
-async def osu_add(ctx, url):
+async def osu_reg(ctx, url):
     discord_id = str(ctx.author.id)
     osu_id = url.split('/')[-1]
     text = osu.AddUser(discord_id, osu_id)
@@ -290,14 +290,25 @@ async def osu_add(ctx, url):
     
     
 @client.command()
-async def osu_remove(ctx):
+async def osu_del(ctx):
     discord_id = str(ctx.author.id)
     text = osu.RemoveUser(discord_id)
     await ctx.channel.send(text)    
 
 
 @client.command()
-async def clash_chest(ctx, player_tag):
-    await ctx.channel.send(clash.GetUpComingQualityChestsText(player_tag))
+async def clash_reg(ctx, clash_id):
+    await ctx.channel.send(clash.register_user(str(ctx.author.id), clash_id))
+
+
+@client.command()
+async def clash_del(ctx):
+    await ctx.channel.send(clash.delete_user(str(ctx.author.id)))
+
+
+@client.command()
+async def clash_chest(ctx):
+    await ctx.channel.send(clash.get_upcoming_quality_chests_text(str(ctx.author.id)))
+
 
 client.run(environ.get("DC_TOKEN"))
