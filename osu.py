@@ -5,8 +5,8 @@ from datetime import datetime
 from dotenv import load_dotenv
 from os import environ
 
-load_dotenv()
 
+load_dotenv()
 OSU_USERS_FILE = "osu_users.txt"
 OSU_SCORE_IDS = "osu_score_ids.txt"
 SEPARATOR = ";"
@@ -15,28 +15,28 @@ CLIENT_SECRET = environ.get("OSU_CLIENT_SECRET")
 
 
 class BeatmapScore:
-    def __init__(self, stats):
-        self.user_pic = stats['user_pic']
-        self.mods = stats['mods']
-        self.id = stats['id']
-        self.score = stats['score']
-        self.accuracy = stats['accuracy']
-        self.beatmap_name = stats['beatmap_name']
-        self.beatmap_star = stats['beatmap_star']
-        self.ranked = stats['ranked']
-        self.beatmap_link = stats['beatmap_link']
-        self.fc = stats['fc']
-        self.count_100 = stats['count_100']
-        self.count_50 = stats['count_50']
-        self.count_miss = stats['count_miss']
-        self.combo = stats['combo']
-        self.username = stats['username']
-        self.pp = stats['pp']
-        self.rank = stats['rank']
-        self.best_score_id = stats['best_score_id']
-        self.url = f"https://osu.ppy.sh/scores/osu/{stats['best_score_id']}"
-        self.beatmap_pic = stats['beatmap_pic']
-        self.user_url = f"https://osu.ppy.sh/users/{stats['user_url']}"
+    def __init__(self, score):
+        self.user_pic = score['user']['avatar_url']
+        self.mods = ' '.join(score['mods'])
+        self.id = score['id']
+        self.score = score['score']
+        self.accuracy = score['accuracy']
+        self.beatmap_name = score['beatmapset']['title']
+        self.beatmap_star = score['beatmap']['difficulty_rating']
+        self.ranked = score['beatmap']['ranked']
+        self.beatmap_link = score['beatmap']['url']
+        self.fc = score['perfect']
+        self.count_100 = score['statistics']['count_100']
+        self.count_50 = score['statistics']['count_50']
+        self.count_miss = score['statistics']['count_miss']
+        self.combo = score['max_combo']
+        self.username = score['user']['username']
+        self.pp = score['pp']
+        self.rank = score['rank']
+        self.best_score_id = score['best_id']
+        self.url = f"https://osu.ppy.sh/scores/osu/{score['best_id']}"
+        self.beatmap_pic = score['beatmapset']['covers']['list@2x']
+        self.user_url = f"https://osu.ppy.sh/users/{score['user']['id']}"
  
         if self.rank == 'D':
             self.rank_color = 0xFF0000
@@ -116,8 +116,7 @@ class BeatmapScore:
             f"Id: {self.id}\n" \
             f"User pic: {self.user_pic}\n" \
             f"User url: {self.user_url}\n" \
-            f"Beatmap pic: {self.beatmap_pic}\n" 
-            
+            f"Beatmap pic: {self.beatmap_pic}\n"
         return s
 
 
@@ -133,8 +132,8 @@ def get_token():
         "grant_type": "client_credentials",  
         "scope": "public"
     }
-    response = requests.post(url=url, data=json.dumps(body), headers=headers).json()['access_token']
-    return response
+    access_token = requests.post(url=url, data=json.dumps(body), headers=headers).json()['access_token']
+    return access_token
 
 
 def save_score_ids(score_ids):
@@ -171,32 +170,9 @@ def add_recent_beatmap_score(user_id):
     score = get_recent_score(user_id, TOKEN)
     if not score:
         return None
-    score = score[0] 
-    stats = {
-        'id': score['id'],
-        'score': score['score'],
-        'accuracy': score['accuracy'],
-        'beatmap_name': score['beatmapset']['title'],
-        'beatmap_star': score['beatmap']['difficulty_rating'],
-        'ranked': score['beatmap']['ranked'],
-        'beatmap_link': score['beatmap']['url'],
-        'fc': score['perfect'],
-        'count_100': score['statistics']['count_100'],
-        'count_50': score['statistics']['count_50'],
-        'count_miss': score['statistics']['count_miss'],
-        'combo': score['max_combo'],
-        'username': score['user']['username'],
-        'pp': score['pp'],
-        'rank': score['rank'],
-        'best_score_id': score['best_id'],
-        'mods': ' '.join(score['mods']),
-        'user_pic': score['user']['avatar_url'],
-        'beatmap_pic': score['beatmapset']['covers']['list@2x'],
-        'user_url': score['user']['id']
-        }
-    #if stats['id'] not in [x.id for x in beatmap_scores] and stats['best_score_id'] != None:
-    if stats['id'] not in beatmap_score_ids:
-        beatmap = BeatmapScore(stats)
+    score = score[0]
+    if score['id'] not in beatmap_score_ids:
+        beatmap = BeatmapScore(score)
         beatmap_scores.append(beatmap)
         beatmap_score_ids.append(beatmap.id)
         save_score_ids(beatmap_score_ids)

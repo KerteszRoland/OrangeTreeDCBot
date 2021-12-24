@@ -15,14 +15,14 @@ from collections import deque
 from dotenv import load_dotenv
 
 
-load_dotenv()
 SOUND_EFFECTS_DIR = "Sound_Effects/"
+load_dotenv()
 queue = deque()
-client = commands.Bot(command_prefix='!')
 musics = []
+balance = 10000
 current_music = ""
 sp_client = sp.get_test_sp()
-balance = 10000
+client = commands.Bot(command_prefix='!')
 
 
 def get_file_names(directory):
@@ -66,7 +66,7 @@ async def play_song_from_yt(vc, url):
 
 
 @tasks.loop(seconds=86400)
-def refresh_osu_token():
+async def refresh_osu_token():
     osu.TOKEN = osu.get_token()
 
 
