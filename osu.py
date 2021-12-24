@@ -56,7 +56,7 @@ class BeatmapScore:
         if self.rank == "X" or self.rank == "XH":
             self.rank = "SS"
 
-    def GetString(self):
+    def __repr__(self):
         s = f"{self.username} "
         s += f"{self.rank} "
 
@@ -72,14 +72,14 @@ class BeatmapScore:
         s += f"{self.beatmap_star}* "
         return s
 
-    def GetEmbed(self):
+    def get_embed(self):
         description = f"Rank: **{self.rank}** \n Accuracy: **{int(self.accuracy*10000)/100}%**"
-        if self.fc == True:
+        if self.fc:
             description += "\n Combo: **FC**"
         else:
             description += f"\n Combo: **{self.combo}x**"
         description += f"\n Score: **{self.score}**"
-        if self.pp != None:
+        if self.pp is not None:
             description += f"\n PP: **{self.pp}**"
         if self.mods != "":
             description += f"\n Mods: **{self.mods}**"
@@ -95,7 +95,7 @@ class BeatmapScore:
         embed.set_footer(text=datetime.now().strftime("%Y.%m.%d %H:%M:%S"), icon_url="https://orangethereal.hu/orange.jpg")
         return embed
 
-    def GetAllInfo(self):
+    def get_all_info(self):
         s = f"Title: {self.beatmap_name}\n" \
             f"Score:{self.score}\n" \
             f"Accuracy: {self.accuracy}\n" \
@@ -121,7 +121,7 @@ class BeatmapScore:
         return s
 
 
-async def GetToken():
+async def get_token():
     url = "https://osu.ppy.sh/oauth/token"
     headers = {
         'Accept': 'application/json',
@@ -137,23 +137,23 @@ async def GetToken():
     return response
 
 
-def SaveScoreIds(score_ids):
+def save_score_ids(score_ids):
     with open(OSU_SCORE_IDS, 'w') as file:
         for score_id in score_ids:
             file.write(f"{score_id}\n")
 
 
-def ReadScoreIds():
+def read_score_ids():
     with open(OSU_SCORE_IDS, 'r') as file:
         return [int(numeric_string) for numeric_string in file.read().splitlines()]
 
 
 TOKEN = ""
 beatmap_scores = list()
-beatmap_score_ids = ReadScoreIds()
+beatmap_score_ids = read_score_ids()
 
 
-async def GetRecentScore(user_id, token):
+async def get_recent_score(user_id, token):
     url = f"https://osu.ppy.sh/api/v2/users/{user_id}/scores/recent?mode=osu&limit=1"
     headers = {
         'Authorization': f'Bearer {token}',
@@ -167,9 +167,9 @@ async def GetRecentScore(user_id, token):
     return response.json()
 
 
-async def AddRecentBeatmapScore(user_id):
-    score = await GetRecentScore(user_id, TOKEN)
-    if score == []:
+async def add_recent_beatmap_score(user_id):
+    score = await get_recent_score(user_id, TOKEN)
+    if not score:
         return None
     score = score[0] 
     stats = {
@@ -194,17 +194,17 @@ async def AddRecentBeatmapScore(user_id):
         'beatmap_pic': score['beatmapset']['covers']['list@2x'],
         'user_url': score['user']['id']
         }
-        #if stats['id'] not in [x.id for x in beatmap_scores] and stats['best_score_id'] != None:
+    #if stats['id'] not in [x.id for x in beatmap_scores] and stats['best_score_id'] != None:
     if stats['id'] not in beatmap_score_ids:
         beatmap = BeatmapScore(stats)
         beatmap_scores.append(beatmap)
         beatmap_score_ids.append(beatmap.id)
-        SaveScoreIds(beatmap_score_ids)
-        print(beatmap.GetString())
-        return beatmap.GetEmbed()
+        save_score_ids(beatmap_score_ids)
+        print(beatmap)
+        return beatmap.get_embed()
 
 
-async def GetUserData(user_id, token):
+async def get_user_data(user_id, token):
     url = f"https://osu.ppy.sh/api/v2/users/{user_id}/osu?key=id"
     headers = {
         'Authorization': f'Bearer {token}',
@@ -217,8 +217,7 @@ async def GetUserData(user_id, token):
     return response.json()
 
 
-
-def IsUserInUsers(discord_id):
+def is_user_in_users(discord_id):
     with open(OSU_USERS_FILE, 'r') as file:
         for line in file.read().splitlines():
             if line.split(SEPARATOR)[0] == discord_id:
@@ -226,7 +225,7 @@ def IsUserInUsers(discord_id):
     return False
     
 
-def GetUsers():
+def get_users():
     temp = dict()
     with open(OSU_USERS_FILE, 'r') as file:
         for line in file.read().splitlines():
@@ -238,7 +237,7 @@ def GetUsers():
     return temp
 
 
-async def RemoveUser(discord_id):
+async def remove_user(discord_id):
     all_lines = ""
     with open(OSU_USERS_FILE, 'r') as file:
         all_lines = file.read().splitlines()
@@ -249,8 +248,8 @@ async def RemoveUser(discord_id):
     return "Osu profile removed successfully!"
 
 
-async def AddUser(discord_id, osu_id):
-    if IsUserInUsers(discord_id):
+async def add_user(discord_id, osu_id):
+    if is_user_in_users(discord_id):
         all_lines = ""
         with open(OSU_USERS_FILE, 'r') as file:
             all_lines = file.readlines()
