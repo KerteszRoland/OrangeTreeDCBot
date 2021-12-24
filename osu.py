@@ -121,7 +121,7 @@ class BeatmapScore:
         return s
 
 
-async def get_token():
+def get_token():
     url = "https://osu.ppy.sh/oauth/token"
     headers = {
         'Accept': 'application/json',
@@ -153,7 +153,7 @@ beatmap_scores = list()
 beatmap_score_ids = read_score_ids()
 
 
-async def get_recent_score(user_id, token):
+def get_recent_score(user_id, token):
     url = f"https://osu.ppy.sh/api/v2/users/{user_id}/scores/recent?mode=osu&limit=1"
     headers = {
         'Authorization': f'Bearer {token}',
@@ -167,8 +167,8 @@ async def get_recent_score(user_id, token):
     return response.json()
 
 
-async def add_recent_beatmap_score(user_id):
-    score = await get_recent_score(user_id, TOKEN)
+def add_recent_beatmap_score(user_id):
+    score = get_recent_score(user_id, TOKEN)
     if not score:
         return None
     score = score[0] 
@@ -204,7 +204,7 @@ async def add_recent_beatmap_score(user_id):
         return beatmap.get_embed()
 
 
-async def get_user_data(user_id, token):
+def get_user_data(user_id, token):
     url = f"https://osu.ppy.sh/api/v2/users/{user_id}/osu?key=id"
     headers = {
         'Authorization': f'Bearer {token}',
@@ -237,7 +237,7 @@ def get_users():
     return temp
 
 
-async def remove_user(discord_id):
+def remove_user(discord_id):
     all_lines = ""
     with open(OSU_USERS_FILE, 'r') as file:
         all_lines = file.read().splitlines()
@@ -248,7 +248,7 @@ async def remove_user(discord_id):
     return "Osu profile removed successfully!"
 
 
-async def add_user(discord_id, osu_id):
+def add_user(discord_id, osu_id):
     if is_user_in_users(discord_id):
         all_lines = ""
         with open(OSU_USERS_FILE, 'r') as file:

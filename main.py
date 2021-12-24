@@ -66,15 +66,15 @@ async def play_song_from_yt(vc, url):
 
 
 @tasks.loop(seconds=86400)
-async def refresh_osu_token():
-    osu.TOKEN = await osu.get_token()
+def refresh_osu_token():
+    osu.TOKEN = osu.get_token()
 
 
 @tasks.loop(seconds=10)
 async def osubot():
     users = osu.get_users()
     for user in users:
-        status = await osu.add_recent_beatmap_score(user)
+        status = osu.add_recent_beatmap_score(user)
         if status is None:
             continue
         osu_channel = client.get_channel(834551161960792084)
