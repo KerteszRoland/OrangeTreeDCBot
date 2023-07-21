@@ -42,6 +42,15 @@ def get_current_playing_song_name(sp):
         return None
 
 
+def get_current_playing_song_url(sp):
+    song = get_current_playing_song(sp)
+    try:
+        return song['item']['external_urls']['spotify']
+    except Exception as e:
+        print("error", e)
+        return None
+
+
 def get_active_device(sp):
     device = [x for x in sp.devices()["devices"] if x["is_active"] == True]
     return device[0]
