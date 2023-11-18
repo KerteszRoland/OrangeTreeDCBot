@@ -1,5 +1,4 @@
 import discord
-import asyncio
 from discord.ext import commands, tasks
 from discord import FFmpegPCMAudio, FFmpegOpusAudio
 from youtubesearchpython.__future__ import VideosSearch
@@ -7,14 +6,13 @@ import os
 from os import environ
 import requests
 from pydub import AudioSegment
-from youtube_dl_dir import youtube_dl
+import youtube_dl
 import random
 import osu
 import sp
 from collections import deque
 from dotenv import load_dotenv
 
-from chatgpt import chatgpt_ask
 from localCraiyon import craiyon_generate
 
 SOUND_EFFECTS_DIR = "Sound_Effects/"
@@ -169,11 +167,6 @@ async def on_ready():
     osubot.start()
     check_if_music_is_playing.start()
 
-
-@bot.command()
-async def chat(ctx, *args):
-    answer = chatgpt_ask(" ".join(args))
-    await ctx.channel.send(f"GPT-chan: {answer}")
 
 @bot.command()
 async def cray(ctx, *args):
