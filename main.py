@@ -67,7 +67,7 @@ async def play_song_from_yt(vc, url, name=''):
             i_url = info['url']
             if environ.get("MODE") == "prod":
                 source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options, executable="/usr/bin/ffmpeg")
-            else
+            else:
                 source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options)
             vc.play(source)
             vc.is_playing()
