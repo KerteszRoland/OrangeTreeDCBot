@@ -48,3 +48,4 @@ wincertstore==0.2
 wsproto==1.2.0
 yarl==1.6.3
 youtube-search-python==1.4.6
+yt-dlp==2023.11.16

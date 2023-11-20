@@ -7,7 +7,7 @@ import os
 from os import environ
 import requests
 from pydub import AudioSegment
-import youtube_dl
+import yt_dlp as youtube_dl
 import random
 import osu
 import sp
@@ -60,11 +60,11 @@ async def play_song_from_yt(vc, url, name=''):
         url = await get_yt_url_from_name(name)
     ffmpeg_options = {
         'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-    ydl_options = {'format': 'bestaudio/best', 'noplaylist': 'True'}
+    ydl_options = {'extract_audio': True, 'format': 'bestaudio','noplaylist': 'True'}
     try:
         with youtube_dl.YoutubeDL(ydl_options) as ydl:
             info = ydl.extract_info(url, download=False)
-            i_url = info['formats'][0]['url']
+            i_url = info['url']
             source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options)
             vc.play(source)
             vc.is_playing()
@@ -173,6 +173,13 @@ async def on_ready():
 async def cray(ctx, *args):
     image_paths = await craiyon_generate(" ".join(args))
     await ctx.channel.send(f"Cray-chan: ", files=[discord.File(x) for x in image_paths])
+
+@bot.command()
+async def bkwhopper(ctx, *args):
+    result = requests.get("https://bk.kerteszroland.hu/api/code", timeout=6900).json()
+    code = result["code"]
+    await ctx.channel.send(f"Your 🍔 code: {code}")
+
 
 @bot.command()
 async def join(ctx):
