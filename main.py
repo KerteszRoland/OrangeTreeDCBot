@@ -65,7 +65,10 @@ async def play_song_from_yt(vc, url, name=''):
         with youtube_dl.YoutubeDL(ydl_options) as ydl:
             info = ydl.extract_info(url, download=False)
             i_url = info['url']
-            source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options)
+            if environ.get("MODE") == "prod":
+                source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options, executable="/usr/bin/ffmpeg")
+            else
+                source = await discord.FFmpegOpusAudio.from_probe(i_url, **ffmpeg_options)
             vc.play(source)
             vc.is_playing()
     except youtube_dl.utils.DownloadError as e:
